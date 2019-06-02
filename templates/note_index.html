@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+{% set title = "Notes" %}
+{%block body%}
+<ul>
+    {% for note in notes %}
+    <li>
+        {{note.id}} in thread {{note.thread_id}}
+    </li>
+    {%endfor%}
+</ul>
+{% endblock %}
