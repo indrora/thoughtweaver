@@ -8,7 +8,7 @@ import sqlalchemy.sql.functions as funcs
 @app.route('/')
 def note_index():
     # get all notes out of the index
-    notes = Note.query.order_by(Note.created.desc()).all()
+    notes = Note.query.filter(Note.child_count == 0).order_by(Note.created.desc()).all()
     return render_template(
         'note_index.html',
         notes=notes

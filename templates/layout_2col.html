@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+{% block body %}
+<!-- we are in a container now -->
+
+<div class="row">
+    <!-- inner content -->
+    <div class="col-md-4">
+        {% block sidebar %}
+        {%endblock%}
+    </div>
+    <div class="col-md-8">
+        {% block content %}
+        Nothin' here but us Chickens.
+        {% endblock %}
+    </div>
+</div>
+
+{% endblock %}
