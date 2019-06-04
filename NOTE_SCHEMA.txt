@@ -1,0 +1,33 @@
+NOTE SCHEMA
+
+There are a handful of kinds of notes. 
+
+All notes have a 'type' and a set of data values, mapped through the 'data' portion of the model.Note class.
+This data portion defines the content of the note.
+
+All note types have a 'value' field. This value field is different depending on the kind of note that it is.
+
+The defined kinds of notes are:
+
+- Text: A text block (markdown or not)
+  - value: denotes the raw text (or markdown source) of the note.
+- URL: An external URL that can be pointed to
+  - value: denotes URL, e.g. 'http://example.com/' that the note points to
+  - caption: denotes a caption that is used for the URL
+  - meta: denotes a block of metadata that is associated with the URL itself
+    - title: Title of the page
+    - description: short blurb about the page
+    - image: URL for an image preview for that page. [should this be stored locally and processed? ]
+- file: A file attached to a note 
+  - value: the 'name' of the file (a short name, not a full path)
+  - caption: A short description of the file itself.
+  - file_id: the internal name of the file
+  - meta: metadata for the file itself
+    - mimetype: Mimetype of the file attached
+    - size: size in bytes of the file attached
+- image: An image attached to a note
+  - value: like `file:image`, a filename of some sort.
+  - caption: A short descriptio nof the image itself.
+  - meta: Metadata for the image
+    - size: filesize (in bytes) of the image
+    - dims: dimensions (in pixels x pixels) of the image
