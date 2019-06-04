@@ -1,0 +1,23 @@
+<!--- Note: {{note.id}}-->
+{%import 'note/render.html' as render %}
+<div class="card my-4 mx-4">
+    {% if not note.is_root %}
+    <div class="card-header">
+        <i class="mdi mdi-arrow-expand-up"></i> in a thread with {{note.thread_up|list|count - 1}} ancestors ({{note.thread_size}} total).          
+    </div>
+    <div class="card-body mb-2 bg-secondary text-white">
+        {{ render.preview(note.parent)}}
+    </div>
+    {% endif %}
+    {{ render.body(note) }}
+    <div class="card-footer d-flex">
+        <div class="text-muted">
+            <i class="mdi {{note.ui_icon}}"></i>{{note.ui_label}}
+        </div>
+        <div class="text-muted h7 mb-2"> <i class="mdi mdi-clock"></i>{{note.created}}</div>
+        <a href="#" class="card-link"><i class="mdi mdi-plus"></i> Append</a>
+        <a href="#" class="card-link"><i class="mdi mdi-share"></i> Share</a>
+    </div>
+</div>
+<!-- Post /////-->
+

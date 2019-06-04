@@ -23,7 +23,7 @@ class Note(db.Model):
     """
     id = db.Column(db.String(32), primary_key=True, default=uids.note_id)
     type = db.Column(db.Enum(NoteType), default=NoteType.Unknown, nullable=False)
-    data = db.Column(db.Text, nullable=False, default='{"data":""}')
+    data = db.Column(JSONType, nullable=False, default={"data":None})
     parent_id = db.Column(db.String(32), db.ForeignKey('note.id'))
     children = db.relationship('Note', backref=db.backref('parent', remote_side=id),
     cascade='all, delete-orphan')
@@ -31,9 +31,9 @@ class Note(db.Model):
 
 
     @property
-    def thread(self):
-        """An SQLAlchemy query for just the items in the current thread"""
-        return Note.query.filter(Note.thread_id == self.thread_id).order_by(Note.created.asc())
+    def thread_size(self):
+        return self.query.filter(__class__.thread_id == self.thread_id).count()
+    
     
     @property
     def is_root(self):
@@ -55,6 +55,7 @@ class Note(db.Model):
     def child_count(self):
         return self.children.count()
     
+
     @child_count.expression
     def child_count(cls):
         from sqlalchemy import func, select
@@ -70,10 +71,9 @@ class Note(db.Model):
     def deep_child_count(self):
         return sum([child.child_count for child in self.children])
 
-
     @property
     def thread_root(self):
-        return self.thread.filter(Note.parent_id == None).one_or_none()
+        return self.parent == None
 
     created = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
     updated = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
@@ -84,6 +84,31 @@ class Note(db.Model):
 
     def __repr__(self):
         return f'<Note({self.id}) of type {self.type.name} in thread {self.thread_id}>'
+
+
+    #
+    # There are some things that need to be cleared up here
+    # Specifically, the CSS and front-end properties of the note itself. 
+    # This lets use be lazy and put some of the actual logic here in the model
+    # rather than in the view. 
+    #
+
+    @property
+    def fe_template(self):
+        return (f'note/card_body/{self.type.name.lower()}.html', 'note/card_body/fallback.html')
+    
+    
+    @property
+    def fe_preview_template(self):
+        return (f'note/preview/{self.type.name.lower()}.html', 'note/preview/fallback.html')
+    
+    @property
+    def ui_icon(self):
+        return 'mdi-note'
+    
+    @property
+    def ui_label(self):
+        return 'Note'
 
 @listens_for(Note, 'before_insert')
 @listens_for(Note, 'before_update')
@@ -100,3 +125,4 @@ def note_set_thread(mapper, connection, note):
                 # outside of the standard model.
                 # This will also cascade any changes to the database. 
                 db.session.add(child)
+
