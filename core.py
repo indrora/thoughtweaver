@@ -1,6 +1,7 @@
 from flask import Flask
 import os
 import configparser
+import enum
 
 # we're going to load the configuration from a parsed file
 
@@ -22,3 +23,15 @@ for section in ini_config.sections():
     for (key, value) in ini_config.items(section):
         app_config_key = prefix + '_' + key.upper()
         app.config[app_config_key] = value
+
+
+# Some helper functions in Jinja
+@app.template_filter('enum_check')
+def jinja_check_enum(obj, maybe_enum_value):
+    if( not isinstance(obj, enum.Enum)):
+        return False
+    if( not isinstance(maybe_enum_value, str)):
+        return False
+    enum_name = obj.name.lower()
+    check_name = maybe_enum_value.lower()
+    return check_name == enum_name

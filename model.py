@@ -53,7 +53,7 @@ class Note(db.Model):
 
     @hybrid_property
     def child_count(self):
-        return self.children.count()
+        return len(self.children)
     
 
     @child_count.expression
@@ -69,7 +69,7 @@ class Note(db.Model):
     
     @hybrid_property
     def deep_child_count(self):
-        return sum([child.child_count for child in self.children])
+        return self.child_count + sum([child.child_count for child in self.children])
 
     @property
     def thread_root(self):
@@ -109,6 +109,16 @@ class Note(db.Model):
     @property
     def ui_label(self):
         return 'Note'
+
+    @property
+    def thread_tips(self):
+        # Thread Tips are the points where this note's children end up.
+        # If we have no children, we return ourselves, otherwise we return the set of our children's tips.
+        if(self.child_count == 0):
+            return [self]
+        else:
+            from functools import reduce
+            return list(reduce( lambda x,y:x+y, map(lambda n: n.thread_tips, self.children)))
 
 @listens_for(Note, 'before_insert')
 @listens_for(Note, 'before_update')

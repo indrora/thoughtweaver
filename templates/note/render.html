@@ -2,5 +2,9 @@
     {% include note.fe_template %}
 {%- endmacro %}
 {%macro preview(note) %}
-    {%include note.fe_preview_template %}
+{% if note.type|enum_check('text') %}{{note.data.value|truncate(72)}}
+{%- elif note.type|enum_check('URL') %}{%if note.data.meta -%}{{note.data.meta['title']}} - {{note.data.meta['description']|truncate(64)}}{%else%}{{note.data.value|truncate(72)}}{%endif -%}
+{%- else -%}
+(Cannot render preview for {{note.id}} of type {{note.type.name}})
+{%- endif%}
 {%- endmacro %}

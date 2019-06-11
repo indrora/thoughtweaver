@@ -1,15 +1,20 @@
 <!--- Note: {{note.id}}-->
 {%import 'note/render.html' as render %}
-<div class="card my-4 mx-4">
+<div class="card note-card">
     {% if not note.is_root %}
     <div class="card-header">
-        <i class="mdi mdi-arrow-expand-up"></i> in a thread with {{note.thread_up|list|count - 1}} ancestors ({{note.thread_size}} total).          
-    </div>
-    <div class="card-body mb-2 bg-secondary text-white">
-        {{ render.preview(note.parent)}}
+        <i class="mdi mdi-arrow-expand-up"></i> {{note.thread_up|list|count - 1}} &middot; <span class="muted">
+            {{ render.preview(note.parent)}}
+        </span>
     </div>
     {% endif %}
     {{ render.body(note) }}
+    {% for child in note.children %}
+    <div class='card-body background-muted'>
+        {{render.preview(child)}} {% if child.child_count > 0 %} <i class="mdi mdi-chevron-right"></i> {{child.child_count}} children{%endif -%}
+        {%- if child.deep_child_count > 0  %} <i class="mdi mdi-chevron-double-right"></i> {{child.deep_child_count}} deep_child_count {% endif %}
+    </div>
+    {% endfor %}
     <div class="card-footer d-flex">
         <div class="text-muted">
             <i class="mdi {{note.ui_icon}}"></i>{{note.ui_label}}

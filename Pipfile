@@ -11,6 +11,7 @@ flask-sqlalchemy = "*"
 sqlalchemy-utils = "*"
 nanoid = "*"
 nanoid-dictionary = "*"
+lorem = "*"
 
 [requires]
 python_version = "3.7"
